@@ -12,17 +12,21 @@
          next-row (assoc row column-index next)]
      (assoc grid row-index next-row))))
 
+(defn- within-bounds [grid row-index column-index]
+  "determines if row index and column index are within in the bounds of the grid"
+  (let [max-row (dec (count grid))
+        max-column (dec (count (nth grid 0)))]
+    (and (<= 0 row-index max-row) (<= 0 column-index max-column))))
+
 (defn- safe-increment
   ([grid row-index column-index]
    "if row-index and column-index are within bounds of grid performs a rolling increment of 2 on the grid with the specified values otherwise returns the grid"
    (safe-increment grid row-index column-index 2))
   ([grid row-index column-index n]
    "if row-index and column-index are within bounds of grid performs a rolling increment of n on the grid with the specified values otherwise returns the grid"
-   (let [max-row (dec (count grid))
-         max-column (dec (count (nth grid 0)))]
-     (if (and (<= 0 row-index max-row) (<= 0 column-index max-column))
-       (increment grid row-index column-index n)
-       grid))))
+   (if (within-bounds grid row-index column-index)
+     (increment grid row-index column-index n)
+     grid)))
 
 (defn press
   ([grid row-index column-index]
@@ -30,10 +34,8 @@
    (press grid row-index column-index 2))
   ([grid row-index column-index n]
    "press button row index and column index of grid with a rolling increment of n"
-   (let [max-row (dec (count grid))
-         max-column (dec (count (nth grid 0)))]
-     (if (and (<= 0 row-index max-row) (<= 0 column-index max-column))
-       (let [neighbors [[-1 0] [0 -1] [0 0] [0 1] [1 0]]
-             coordinates (map #(map + [row-index column-index] %) neighbors)]
-         (reduce #(safe-increment %1 (first %2) (second %2) n) grid coordinates))
-       grid))))
+   (if (within-bounds grid row-index column-index)
+     (let [neighbors [[-1 0] [0 -1] [0 0] [0 1] [1 0]]
+           coordinates (map #(map + [row-index column-index] %) neighbors)]
+       (reduce #(safe-increment %1 (first %2) (second %2) n) grid coordinates))
+     grid)))
