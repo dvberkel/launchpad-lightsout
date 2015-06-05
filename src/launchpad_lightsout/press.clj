@@ -30,6 +30,10 @@
    (press grid row-index column-index 2))
   ([grid row-index column-index n]
    "press button row index and column index of grid with a rolling increment of n"
-   (let [neighbors [[-1 0] [0 -1] [0 0] [0 1] [1 0]]
-         coordinates (map #(map + [row-index column-index] %) neighbors)]
-     (reduce #(safe-increment %1 (first %2) (second %2) n) grid coordinates))))
+   (let [max-row (dec (count grid))
+         max-column (dec (count (nth grid 0)))]
+     (if (and (<= 0 row-index max-row) (<= 0 column-index max-column))
+       (let [neighbors [[-1 0] [0 -1] [0 0] [0 1] [1 0]]
+             coordinates (map #(map + [row-index column-index] %) neighbors)]
+         (reduce #(safe-increment %1 (first %2) (second %2) n) grid coordinates))
+       grid))))
