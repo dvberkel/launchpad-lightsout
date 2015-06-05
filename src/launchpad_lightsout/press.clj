@@ -1,6 +1,6 @@
 (ns launchpad-lightsout.press)
 
-(defn increment
+(defn- increment
   ([grid row-index column-index]
    "rolling increment of 2 for the value of the grid at row index and column index"
    (increment grid row-index column-index 2))
@@ -12,7 +12,7 @@
          next-row (assoc row column-index next)]
      (assoc grid row-index next-row))))
 
-(defn safe-increment
+(defn- safe-increment
   ([grid row-index column-index]
    "if row-index and column-index are within bounds of grid performs a rolling increment of 2 on the grid with the specified values otherwise returns the grid"
    (safe-increment grid row-index column-index 2))
