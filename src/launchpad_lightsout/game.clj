@@ -10,7 +10,7 @@
 
 (defn lights-out-handler [x y pressed?]
   (do
-    (swap! grid (fn [grid] (press grid x y 3)))
+    (if pressed? (swap! grid (fn [grid] (press grid x y 3))))
     (push lpad @grid)))
 
 (on-grid-pressed lpad lights-out-handler)
