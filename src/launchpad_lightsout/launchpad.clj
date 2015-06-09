@@ -3,7 +3,7 @@
 
 (defn- number-to-color [n]
   "transforms a number to a color"
-  (get {1 :red 2 :green 3 :amber} n :off))
+  (get {1 :red 2 :green 3 :orange} n :off))
 
 (defn push
   ([lpad grid]
