@@ -8,11 +8,14 @@
 
 (def lpad (open "Launchpad Mini"))
 
-(defn lights-out-handler [x y pressed?]
-  (do
-    (if pressed? (swap! grid (fn [grid] (press grid x y 3))))
-    (push lpad @grid)))
 
-(on-grid-pressed lpad lights-out-handler)
+(defn create-lights-out-handler [lpad grid colors]
+  "create a lights out handler that cycles through a number of colors"
+  (fn [x y pressed?]
+    (do
+      (if pressed? (swap! grid (fn [grid] (press grid x y colors))))
+      (push lpad @grid))))
+
+(on-grid-pressed lpad (create-lights-out-handler lpad grid 2))
 
 (close lpad)
