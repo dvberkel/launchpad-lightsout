@@ -16,10 +16,23 @@
    (create-game m n 2))
   ([m n o]
    "creates a m x n game with o colors"
-   (let [grid (setup-grid m n)]
-     { :height m :width n :colors o :grid grid})))
+   (let [grid (setup-grid m n o)]
+     { :rows m :columns n :colors o :grid grid})))
 
 (def game (atom (create-game 5 5 2)))
+
+(defn create-setup-handler [lpad game]
+  "Create a setup handler to determine game"
+  (let [next-color {2 3 3 4 4 2}]
+    (fn [x y pressed?]
+      (let [row (inc x) column (inc y)]
+        (do
+          (if pressed?
+            (let [colors (if (and (= row (@game :rows)) (= column (@game :columns)))
+                           (get next-color (@game :colors) 2)
+                           2)]
+              (swap! game (fn [game] (create-game row column colors)))))
+          (push lpad (@game :grid)))))))
 
 (def grid (atom (lights-out-grid 5)))
 
@@ -34,5 +47,6 @@
       (push lpad @grid))))
 
 (on-grid-pressed lpad (create-lights-out-handler lpad grid 2))
+(on-grid-pressed lpad (create-setup-handler lpad game))
 
 (close lpad)
