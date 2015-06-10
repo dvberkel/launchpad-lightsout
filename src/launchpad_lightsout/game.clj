@@ -19,7 +19,6 @@
    (let [grid (setup-grid m n o)]
      { :rows m :columns n :colors o :grid grid})))
 
-(def game (atom (create-game 5 5 2)))
 
 (defn create-setup-handler [lpad game]
   "Create a setup handler to determine game"
@@ -34,19 +33,27 @@
               (swap! game (fn [game] (create-game row column colors)))))
           (push lpad (@game :grid)))))))
 
-(def grid (atom (lights-out-grid 5)))
 
-(def lpad (open "Launchpad Mini"))
-
-
-(defn create-lights-out-handler [lpad grid colors]
+(defn create-lights-out-handler [lpad game]
   "create a lights out handler that cycles through a number of colors"
   (fn [x y pressed?]
     (do
-      (if pressed? (swap! grid (fn [grid] (press grid x y colors))))
-      (push lpad @grid))))
+      (if pressed? (swap! game (fn [game]
+                                 (assoc game :grid (press (game :grid) x y (game :colors))))))
+      (push lpad (@game :grid)))))
 
-(on-grid-pressed lpad (create-lights-out-handler lpad grid 2))
+(defn reset-game [game]
+  "Resets the grid to be empty"
+  (swap! game (fn [game]
+                (assoc game :grid (lights-out-grid (game :rows) (game :columns))))))
+
+(def game (atom (create-game 5 5 2)))
+(def lpad (open "Launchpad Mini"))
+
 (on-grid-pressed lpad (create-setup-handler lpad game))
+(do
+  (reset-game game)
+  (reset lpad))
+(on-grid-pressed lpad (create-lights-out-handler lpad game))
 
 (close lpad)
