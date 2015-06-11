@@ -1,5 +1,5 @@
 (ns launchpad-lightsout.game
-  (use [clj-launchpad :only [open on-grid-pressed reset close]])
+  (use [clj-launchpad :only [open create-press-register reset close]])
   (use [launchpad-lightsout.grid :only [lights-out-grid setup-grid]])
   (use [launchpad-lightsout.press :only [press]])
   (use [launchpad-lightsout.launchpad :only [push]]))
@@ -50,10 +50,17 @@
 (def game (atom (create-game 5 5 2)))
 (def lpad (open "Launchpad Mini"))
 
-(on-grid-pressed lpad (create-setup-handler lpad game))
+(def actions (create-press-register lpad))
+
+(def setup-handler (create-setup-handler lpad game))
+(def play-handler (create-lights-out-handler lpad game))
+
+((actions :register) setup-handler)
+((actions :unregister) setup-handler)
 (do
   (reset-game game)
   (reset lpad))
-(on-grid-pressed lpad (create-lights-out-handler lpad game))
+((actions :register) play-handler)
+((actions :unregister) play-handler)
 
 (close lpad)
