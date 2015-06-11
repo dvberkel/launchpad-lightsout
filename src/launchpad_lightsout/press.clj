@@ -18,7 +18,7 @@
         max-column (dec (count (nth grid 0)))]
     (and (<= 0 row-index max-row) (<= 0 column-index max-column))))
 
-(defn- safe-increment
+(defn safe-increment
   ([grid row-index column-index]
    "if row-index and column-index are within bounds of grid performs a rolling increment of 2 on the grid with the specified values otherwise returns the grid"
    (safe-increment grid row-index column-index 2))

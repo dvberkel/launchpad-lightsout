@@ -1,7 +1,7 @@
 (ns launchpad-lightsout.game
   (use [clj-launchpad :only [open create-press-register reset close]])
   (use [launchpad-lightsout.grid :only [lights-out-grid setup-grid]])
-  (use [launchpad-lightsout.press :only [press]])
+  (use [launchpad-lightsout.press :only [press safe-increment]])
   (use [launchpad-lightsout.launchpad :only [push]]))
 
 (defn create-game
@@ -33,6 +33,13 @@
               (swap! game (fn [game] (create-game row column colors)))))
           (push lpad (@game :grid)))))))
 
+(defn create-problem-handler [lpad game]
+  "Create a problem handler that allows to setup a Lights Out problem"
+  (fn [x y pressed?]
+    (do
+      (if pressed? (swap! game (fn [game]
+                                 (assoc game :grid (safe-increment (game :grid) x y (game :colors))))))
+      (push lpad (@game :grid)))))
 
 (defn create-lights-out-handler [lpad game]
   "create a lights out handler that cycles through a number of colors"
@@ -53,14 +60,17 @@
 (def actions (create-press-register lpad))
 
 (def setup-handler (create-setup-handler lpad game))
+(def problem-handler (create-problem-handler lpad game))
 (def play-handler (create-lights-out-handler lpad game))
 
 ((actions :register) setup-handler)
 ((actions :unregister) setup-handler)
+((actions :register) problem-handler)
+((actions :unregister) problem-handler)
+((actions :register) play-handler)
+((actions :unregister) play-handler)
 (do
   (reset-game game)
   (reset lpad))
-((actions :register) play-handler)
-((actions :unregister) play-handler)
 
 (close lpad)
