@@ -53,24 +53,3 @@
   "Resets the grid to be empty"
   (swap! game (fn [game]
                 (assoc game :grid (lights-out-grid (game :rows) (game :columns))))))
-
-(def game (atom (create-game 5 5 2)))
-(def lpad (open "Launchpad Mini"))
-
-(def actions (create-press-register lpad))
-
-(def setup-handler (create-setup-handler lpad game))
-(def problem-handler (create-problem-handler lpad game))
-(def play-handler (create-lights-out-handler lpad game))
-
-((actions :register) setup-handler)
-((actions :unregister) setup-handler)
-((actions :register) problem-handler)
-((actions :unregister) problem-handler)
-((actions :register) play-handler)
-((actions :unregister) play-handler)
-(do
-  (reset-game game)
-  (reset lpad))
-
-(close lpad)
